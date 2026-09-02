@@ -24,7 +24,8 @@
       "WebFetch(domain:json.schemastore.org)",
       "WebFetch(domain:claudelog.com)",
       "WebFetch(domain:www.eesel.ai)",
-      "WebFetch(domain:shipyard.build)"
+      "WebFetch(domain:shipyard.build)",
+      "mcp__github__pull_request_read"
     ],
     "deny": [],
     "ask": [
