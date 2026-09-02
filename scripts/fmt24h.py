@@ -3,7 +3,7 @@
 
 Reads the response of /api/v3/ticker/24hr on stdin — one object or a list:
 
-    curl -s 'https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT"]' \\
+    curl -sS 'https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT"]' \\
       | python3 scripts/fmt24h.py
 
 Batch symbols into a single request: it costs one weight unit instead of
