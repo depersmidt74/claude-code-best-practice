@@ -1,18 +1,6 @@
 ---
 name: presentation-claude-gemini
 description: PROACTIVELY use this agent whenever the user wants to update, modify, rearrange, or fix the CLAUDE-GEMINI presentation (`presentation/2026-04-25-gdg-kolachi-cli-claude-code-gemini/index.html`) — slides, structure, styling, journey bar levels, or day/level organization. Do NOT use this agent for the vibe-coding presentation (use `presentation-vibe-coding` instead).
-allowedTools:
-  - "Bash(*)"
-  - "Read"
-  - "Write"
-  - "Edit"
-  - "Glob"
-  - "Grep"
-  - "WebFetch(*)"
-  - "WebSearch(*)"
-  - "Agent"
-  - "NotebookEdit"
-  - "mcp__*"
 model: sonnet
 color: cyan
 ---
