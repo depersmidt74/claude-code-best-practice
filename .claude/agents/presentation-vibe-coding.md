@@ -4,9 +4,9 @@ description: PROACTIVELY use this agent whenever the user wants to update, modif
 model: sonnet
 color: magenta
 skills:
-  - presentation/vibe-to-agentic-framework
-  - presentation/presentation-structure
-  - presentation/presentation-styling
+  - vibe-to-agentic-framework
+  - presentation-structure
+  - presentation-styling
 ---
 
 # Presentation Vibe-Coding Agent
@@ -59,7 +59,7 @@ After changes, verify:
 9. Do not manually insert `.level-badge` or `.weight-badge` markup in slide HTML (badges are JS-injected)
 10. Settings precedence text must separate user-writable override order from enforced policy (`managed-settings.json`)
 11. If slide 32 is touched, ensure skill frontmatter coverage includes `context: fork`
-12. Keep the framework skill identity canonical: `presentation/vibe-to-agentic-framework` (do not rename to variants)
+12. Keep the framework skill identity canonical: `vibe-to-agentic-framework` (do not rename to variants)
 
 ### Step 5: Self-Evolution (after every execution)
 
@@ -67,7 +67,7 @@ After completing changes to the presentation, you MUST update your own knowledge
 
 #### 5a. Update the Framework Skill
 
-Read the actual current state of `presentation/vibe-coding-to-agentic-engineering/index.html` and update `.claude/skills/presentation/vibe-to-agentic-framework/SKILL.md`:
+Read the actual current state of `presentation/vibe-coding-to-agentic-engineering/index.html` and update `.claude/skills/vibe-to-agentic-framework/SKILL.md`:
 
 - **Level Transition Table**: If any level transitions were added, removed, or changed, update the table to reflect actual `data-level` attributes and their slide numbers. The table must always match reality.
 - **Section ranges**: If slide numbering changed (e.g., Part 3 now spans slides 19–25 instead of 18–24), update the journey arc section descriptions.
@@ -77,7 +77,7 @@ Read the actual current state of `presentation/vibe-coding-to-agentic-engineerin
 
 #### 5b. Update the Structure Skill
 
-Update `.claude/skills/presentation/presentation-structure/SKILL.md`:
+Update `.claude/skills/presentation-structure/SKILL.md`:
 
 - **Level Transitions table**: Update section slide ranges and level assignments to match the current presentation.
 - **Section divider examples**: If section divider format changed, update the example HTML.
