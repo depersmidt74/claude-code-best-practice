@@ -28,7 +28,9 @@ agent that wrote the code is the worst reviewer of it.
 
 ## Step 1 — Establish the review target
 
-Resolve the target in this order, and state which one you used:
+Resolve the target in this order. Report it from what git actually says — run
+`git rev-parse --abbrev-ref HEAD` and name the branch, or `detached at <short sha>`
+when it returns `HEAD`. Never name a branch you did not read.
 
 1. Paths or a PR number named by the caller.
 2. Uncommitted work: `git status --short`, then `git diff` and `git diff --staged`.
