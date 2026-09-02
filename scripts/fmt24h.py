@@ -3,11 +3,17 @@
 
 Reads the response of /api/v3/ticker/24hr on stdin — one object or a list:
 
-    curl -sS 'https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT"]' \\
+    curl -sS -g 'https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT"]' \\
       | python3 scripts/fmt24h.py
 
 Batch symbols into a single request: it costs one weight unit instead of
 several and gives one consistent snapshot rather than several moments in time.
+
+`-g` (--globoff) is required for the multi-symbol form: curl otherwise reads the
+brackets as its own URL-range syntax and dies with "bad range specification"
+before the request ever leaves the machine. `-sS` keeps the progress meter off
+while letting curl report why it failed — without it that error is invisible and
+the empty pipe looks like a problem in this script.
 
 Exit codes: 0 ok · 1 the exchange returned an error · 2 unusable input.
 """
