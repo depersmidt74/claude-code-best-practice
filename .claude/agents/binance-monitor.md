@@ -85,6 +85,10 @@ Snapshot: <UTC timestamp> · источник api.binance.com
 сказать.>
 ```
 
+`scripts/fmt24h.py` in this repository renders a `/api/v3/ticker/24hr` response
+in exactly this shape — pipe the response into it rather than formatting by hand
+when the request is a plain 24h snapshot with no memory comparison.
+
 Rules for the report:
 
 - Quote prices at the symbol's own tick size — do not round `0.00001234` to
