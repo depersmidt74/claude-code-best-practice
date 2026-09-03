@@ -20,8 +20,8 @@ Claude Code subagents — frontmatter fields and official built-in agent types.
 |-------|------|----------|-------------|
 | `name` | string | Yes | Unique identifier using lowercase letters and hyphens |
 | `description` | string | Yes | When to invoke. Use `"PROACTIVELY"` for auto-invocation by Claude |
-| `tools` | string/list | No | Comma-separated allowlist of tools (e.g., `Read, Write, Edit, Bash`). Inherits all tools if omitted. Supports `Agent(agent_type)` syntax to restrict spawnable subagents; the older `Task(agent_type)` alias still works |
-| `disallowedTools` | string/list | No | Tools to deny, removed from inherited or specified list |
+| `tools` | string/list | No | Comma-separated allowlist of tools (e.g., `Read, Write, Edit, Bash`). Inherits all tools if omitted. Supports `Agent(agent_type)` syntax to restrict spawnable subagents; the older `Task(agent_type)` alias still works. Whole-tool granularity only — see [Command-scoped patterns](#command-scoped-patterns-do-not-work-here) |
+| `disallowedTools` | string/list | No | Tools to deny, removed from inherited or specified list. Whole-tool granularity only — see [Command-scoped patterns](#command-scoped-patterns-do-not-work-here) |
 | `model` | string | No | Model to use: `sonnet`, `opus`, `haiku`, a full model ID (e.g., `claude-opus-4-6`), or `inherit` (default: `inherit`) |
 | `permissionMode` | string | No | Permission mode: `default`, `acceptEdits`, `auto`, `dontAsk`, `bypassPermissions`, or `plan` |
 | `maxTurns` | integer | No | Maximum number of agentic turns before the subagent stops |
@@ -34,6 +34,37 @@ Claude Code subagents — frontmatter fields and official built-in agent types.
 | `isolation` | string | No | Set to `"worktree"` to run in a temporary git worktree (auto-cleaned if no changes) |
 | `initialPrompt` | string | No | Auto-submitted as the first user turn when this agent runs as the main session agent (via `--agent` or the `agent` setting). Commands and skills are processed. Prepended to any user-provided prompt |
 | `color` | string | No | Display color for the subagent in the task list and transcript: `red`, `blue`, `green`, `yellow`, `purple`, `orange`, `pink`, or `cyan` |
+
+### Command-scoped patterns do not work here
+
+`tools:` and `disallowedTools:` name whole tools. A command-scoped pattern such
+as `Bash(git log:*)` is valid syntax in a permission rule, so it is tempting to
+write one here as a guardrail — but a subagent grant is not a permission rule.
+Three throwaway probe agents, run against a trusted workspace whose
+`.claude/settings.json` allows `Bash(*)`:
+
+| Frontmatter | Asked to run | Result |
+|---|---|---|
+| `tools: Bash(git log:*)` | `git log`, `curl --version`, `whoami` | all three ran — the pattern narrowed nothing |
+| `tools: Bash, Read`<br>`disallowedTools: Bash(curl:*)` | `git log`, `curl --version` | neither ran; the agent reported holding only `Read` — the whole Bash tool was removed |
+| `tools: Bash(git status:*), Bash(git log:*)` on an **untrusted** workspace | `git log`, `git push --dry-run`, `rm -f …`, `curl --version` | `git log` ran, the rest asked for approval — the untrusted default, not the pattern |
+
+The third row is why this is easy to get wrong. On an untrusted workspace
+`settings.json` is ignored wholesale, side-effecting commands fall back to an
+approval prompt, and the outcome looks exactly like a working allowlist. Trust
+the workspace before concluding anything about a tool grant.
+
+So the only fail-closed lever a subagent has is naming the tool: `Read, Grep,
+Glob, Bash` grants Bash entirely, and `disallowedTools: Bash` removes it
+entirely. To restrict *which commands* run, use `permissions` in
+`.claude/settings.json` — that is the layer that reads command scopes. Writing
+one into `tools:` produces the same false guarantee as `allowedTools:` did in
+`c67c83c`.
+
+Skills differ: `allowed-tools` in `SKILL.md` does take command-scoped patterns
+(`Bash(gh:*)`), but it *widens* — it lists what runs without a prompt while the
+skill is active. It is prompt reduction, not a guardrail. See
+[claude-skills.md](claude-skills.md).
 
 ---
 
