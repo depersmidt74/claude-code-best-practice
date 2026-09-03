@@ -30,7 +30,7 @@ place. There is no error — the behaviour simply never happens.
 
 | Claim | Check |
 |---|---|
-| A skill is installed | `claude -p "List the exact names of every skill available to you via the Skill tool, one per line. Do not call any tool."` — anything absent is not loaded |
+| A skill is installed | `claude -p "List the exact names of every skill available to you via the Skill tool, one per line. Do not call any tool."` — anything absent is not model-invocable. Not the same as absent: a skill with `disable-model-invocation: true` never appears yet runs fine as `/<name>`, so check the file for that field before calling a skill missing |
 | An agent's tools are restricted | Run it with a prompt needing the forbidden tool; it reports the tools it holds |
 | A hook fires | Trigger its event and look for the effect, not for the config entry |
 | Any grant is actually in effect | `projects["<repo>"].hasTrustDialogAccepted` is `true` in `~/.claude.json`. On an untrusted workspace `.claude/settings.json` is ignored wholesale — Claude Code says so on stderr — and the resulting approval prompts look exactly like a working allowlist |
@@ -47,6 +47,15 @@ place. There is no error — the behaviour simply never happens.
   `best-practice/claude-subagents.md`. Same false guarantee as `allowedTools:`,
   found while porting the pattern in from n8n — where it lives in a skill's
   `allowed-tools`, which widens rather than restricts.
+- Unparseable frontmatter does not fail a skill. Eight probes in a clean
+  workspace: a `SKILL.md` with no frontmatter, with no `name`, with no
+  `description`, with invented fields, and with frontmatter that is not valid
+  YAML all loaded anyway — name falling back to the directory, description to
+  the body's first line, and every field written in the block silently
+  discarded. The skill runs while its whole configuration is gone. Placement is
+  the only breakage Claude Code enforces. Probe table in
+  `best-practice/claude-skills.md`; run the frontmatter parse check under
+  Commands before trusting any field.
 - Skills are discovered at exactly `.claude/skills/<name>/SKILL.md`. One extra
   directory level makes a skill invisible; three had been dead for an unknown
   time, and the agent preloading them ran without the knowledge it is built on.
@@ -118,6 +127,26 @@ Subagents **cannot** invoke other subagents through bash. Use the Agent tool:
   where egress is closed, and the summary says the chain is unconfirmed.
 - Hooks off for a session: `"disableAllHooks": true` in
   `.claude/settings.local.json`.
+
+## Before cloning anything
+
+Check what the maintainer already has, in this order, and only then clone:
+
+1. `list_repos` with the name as query — returns their repositories **including
+   forks**, which is the case the other checks miss.
+2. The session's attached-repository list. It is fixed at session start, so a
+   fork attached in an earlier session does not appear in it.
+3. Disk: an attached repo sits at `/home/user/<repo>`, an anonymous clone at
+   `/home/user/<owner>/<repo>`.
+
+**Their fork outranks upstream.** It may carry their own commits, and it clones
+with full history where an anonymous `--depth 1` clone does not.
+
+Written after cloning `obra/superpowers` at `--depth 1` while
+`depersmidt74/superpowers` already existed. The trees turned out identical, so
+nothing was lost from the reading — but the history was, and the history is
+where a skill's evolution and its commit-message evidence live. One `list_repos`
+call would have settled it.
 
 ## Git
 
