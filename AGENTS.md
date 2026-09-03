@@ -128,6 +128,26 @@ Subagents **cannot** invoke other subagents through bash. Use the Agent tool:
 - Hooks off for a session: `"disableAllHooks": true` in
   `.claude/settings.local.json`.
 
+## Before cloning anything
+
+Check what the maintainer already has, in this order, and only then clone:
+
+1. `list_repos` with the name as query — returns their repositories **including
+   forks**, which is the case the other checks miss.
+2. The session's attached-repository list. It is fixed at session start, so a
+   fork attached in an earlier session does not appear in it.
+3. Disk: an attached repo sits at `/home/user/<repo>`, an anonymous clone at
+   `/home/user/<owner>/<repo>`.
+
+**Their fork outranks upstream.** It may carry their own commits, and it clones
+with full history where an anonymous `--depth 1` clone does not.
+
+Written after cloning `obra/superpowers` at `--depth 1` while
+`depersmidt74/superpowers` already existed. The trees turned out identical, so
+nothing was lost from the reading — but the history was, and the history is
+where a skill's evolution and its commit-message evidence live. One `list_repos`
+call would have settled it.
+
 ## Git
 
 - One commit per file. A file gets a message about that file's change.
