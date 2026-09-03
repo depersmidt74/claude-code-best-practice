@@ -1,6 +1,6 @@
 # Skills Implementation
 
-![Last Updated](https://img.shields.io/badge/Last_Updated-Mar_02%2C_2026-white?style=flat&labelColor=555)
+![Last Updated](https://img.shields.io/badge/Last_Updated-Sep_03%2C_2026-white?style=flat&labelColor=555)
 
 <table width="100%">
 <tr>
@@ -11,83 +11,70 @@
 
 ---
 
-<a href="#weather-svg-creator"><img src="../!/tags/implemented-hd.svg" alt="Implemented"></a>
+<a href="#time-svg-creator-skill"><img src="../!/tags/implemented-hd.svg" alt="Implemented"></a>
 
 Two skills are implemented in this repo as part of the **Command → Agent → Skill** architecture pattern, demonstrating two distinct skill invocation patterns: **agent skills** (preloaded) and **skills** (invoked directly).
 
 ---
 
-## Weather SVG Creator (Skill)
+## Time SVG Creator (Skill)
 
-**File**: [`.claude/skills/weather-svg-creator/SKILL.md`](../.claude/skills/weather-svg-creator/SKILL.md)
+**File**: [`agent-teams/.claude/skills/time-svg-creator/SKILL.md`](../agent-teams/.claude/skills/time-svg-creator/SKILL.md)
 
 ```yaml
 ---
-name: weather-svg-creator
-description: Creates an SVG weather card showing the current temperature for
-  Dubai. Writes the SVG to orchestration-workflow/weather.svg and updates
-  orchestration-workflow/output.md.
+name: time-svg-creator
+description: Creates an SVG time card showing the current time for Dubai.
+  Writes the SVG to agent-teams/output/dubai-time.svg and updates
+  agent-teams/output/output.md.
 ---
 
-# Weather SVG Creator Skill
-
-This skill creates a visual SVG weather card and writes the output files.
+# Time SVG Creator Skill
 
 ## Task
-Create an SVG weather card displaying the temperature for Dubai, UAE,
-and write it along with a summary to output files.
+Create an SVG time card displaying the current Dubai time, and write it
+along with a summary to output files.
 
 ## Instructions
-You will receive the temperature value and unit (Celsius or Fahrenheit)
-from the calling context.
+You will receive `time`, `timezone` and `formatted` from the calling context.
 
-### 1. Create SVG Weather Card
-Generate a clean SVG weather card...
-
-### 2. Write SVG File
-Write the SVG content to `orchestration-workflow/weather.svg`.
-
-### 3. Write Output Summary
-Write to `orchestration-workflow/output.md`...
+### 1. Create SVG Time Card
+### 2. Write SVG File          -> agent-teams/output/dubai-time.svg
+### 3. Write Output Summary    -> agent-teams/output/output.md
 
 ...
 ```
 
-This is a **skill** — invoked directly by the command via the Skill tool. It receives the temperature data from the conversation context and creates the SVG weather card and output summary.
+This is a **skill** — invoked directly by the command via the Skill tool. It receives the time data from the conversation context and creates the SVG card and output summary. It also ships `examples.md` and `reference.md` alongside `SKILL.md`, the progressive-disclosure pattern: the body stays short and the detail loads only when needed.
 
 ---
 
-## Weather Fetcher (Agent Skill)
+## Time Fetcher (Agent Skill)
 
-**File**: [`.claude/skills/weather-fetcher/SKILL.md`](../.claude/skills/weather-fetcher/SKILL.md)
+**File**: [`agent-teams/.claude/skills/time-fetcher/SKILL.md`](../agent-teams/.claude/skills/time-fetcher/SKILL.md)
 
 ```yaml
 ---
-name: weather-fetcher
-description: Instructions for fetching current weather temperature data
-  for Dubai, UAE from Open-Meteo API
+name: time-fetcher
+description: Instructions for fetching current Dubai time via bash command
 user-invocable: false
 ---
 
-# Weather Fetcher Skill
+## Dubai Time Fetcher
 
-This skill provides instructions for fetching current weather data.
+### Command
+TZ='Asia/Dubai' date '+%Y-%m-%d %H:%M:%S %Z'
 
-## Task
-Fetch the current temperature for Dubai, UAE in the requested unit
-(Celsius or Fahrenheit).
+### Expected Output Format
+`YYYY-MM-DD HH:MM:SS +04` (Gulf Standard Time)
 
-## Instructions
-1. Fetch Weather Data: Use the WebFetch tool to get current weather data
-   - Celsius URL: https://api.open-meteo.com/v1/forecast?latitude=25.2048&longitude=55.2708&current=temperature_2m&temperature_unit=celsius
-   - Fahrenheit URL: https://api.open-meteo.com/v1/forecast?latitude=25.2048&longitude=55.2708&current=temperature_2m&temperature_unit=fahrenheit
-2. Extract Temperature: From the JSON response, extract `current.temperature_2m`
-3. Return Result: Return the temperature value and unit clearly.
-
-...
+### Return Format
+- time: Just the time portion (HH:MM:SS)
+- timezone: "GST (UTC+4)"
+- formatted: The full output string from the command
 ```
 
-This is an **agent skill** — preloaded into the `weather-agent` at startup via the `skills:` frontmatter field. It is not invoked directly; instead, it serves as domain knowledge injected into the agent's context. Note `user-invocable: false` which hides it from the `/` command menu.
+This is an **agent skill** — preloaded into the `time-agent` at startup via the `skills:` frontmatter field. It is not invoked directly; it is domain knowledge injected into the agent's context. Note `user-invocable: false`, which hides it from the `/` menu.
 
 ---
 
@@ -95,17 +82,21 @@ This is an **agent skill** — preloaded into the `weather-agent` at startup via
 
 | Pattern | Invocation | Example | Key Difference |
 |---------|-----------|---------|----------------|
-| **Skill** | `Skill(skill: "name")` | `weather-svg-creator` | Invoked directly via Skill tool |
-| **Agent Skill** | Preloaded via `skills:` field | `weather-fetcher` | Injected into agent context at startup |
+| **Skill** | `Skill(skill: "name")` | `time-svg-creator` | Invoked directly via Skill tool |
+| **Agent Skill** | Preloaded via `skills:` field | `time-fetcher` | Injected into agent context at startup |
+
+A preloaded skill is only real if it is discoverable. Skills are found at exactly `.claude/skills/<name>/SKILL.md` — one extra directory level makes the skill invisible, with no error, and an agent preloading it runs without the knowledge it is built on. Verify by listing, never by reading the config; see [AGENTS.md](../AGENTS.md).
 
 ---
 
 ## ![How to Use](../!/tags/how-to-use.svg)
 
-**Skill** — invoke directly via slash command:
+These skills live in the nested `agent-teams/` workspace, so run Claude from there:
+
 ```bash
+$ cd agent-teams
 $ claude
-> /weather-svg-creator
+> /time-svg-creator
 ```
 
 ---
@@ -113,6 +104,12 @@ $ claude
 ## ![How to Implement](../!/tags/how-to-implement.svg)
 
 Ask Claude to create one for you — it will generate the markdown file with YAML frontmatter and body in `.claude/skills/my-skill/SKILL.md`
+
+```markdown
+---
+name: my-skill
+description: What the skill does and when Claude should reach for it
+---
 
 # My Skill
 
