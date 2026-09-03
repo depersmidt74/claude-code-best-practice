@@ -4,6 +4,7 @@ description: Instructions for fetching current weather temperature data for Duba
 user-invocable: false
 allowed-tools:
   - "WebFetch(*)"
+compatibility: Requires outbound network access to api.open-meteo.com and the WebFetch tool. No API key and no CLI. Where egress is closed the skill cannot return a temperature — say so rather than reporting a remembered value.
 ---
 
 # Weather Fetcher Skill
