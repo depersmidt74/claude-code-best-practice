@@ -1,6 +1,6 @@
 # Sub-agents Implementation
 
-![Last Updated](https://img.shields.io/badge/Last_Updated-Mar_02%2C_2026_07%3A59_PM_PKT-white?style=flat&labelColor=555)
+![Last Updated](https://img.shields.io/badge/Last_Updated-Sep_03%2C_2026-white?style=flat&labelColor=555)
 
 <table width="100%">
 <tr>
@@ -11,69 +11,67 @@
 
 ---
 
-<a href="#weather-agent"><img src="../!/tags/implemented-hd.svg" alt="Implemented"></a>
+<a href="#time-agent"><img src="../!/tags/implemented-hd.svg" alt="Implemented"></a>
 
-The weather agent is implemented in this repo as an example of the **Command → Agent → Skill** architecture pattern, demonstrating two distinct skill patterns.
+The time agent is implemented in this repo as an example of the **Command → Agent → Skill** architecture pattern, demonstrating two distinct skill patterns.
 
 ---
 
-## Weather Agent
+## Time Agent
 
-**File**: [`.claude/agents/weather-agent.md`](../.claude/agents/weather-agent.md)
+**File**: [`agent-teams/.claude/agents/time-agent.md`](../agent-teams/.claude/agents/time-agent.md)
 
 ```yaml
 ---
-name: weather-agent
-description: Use this agent PROACTIVELY when you need to fetch weather data for
-  Dubai, UAE. This agent fetches real-time temperature from Open-Meteo
-  using its preloaded weather-fetcher skill.
-allowedTools:
-  - "Read"
-  - "Skill"
-model: sonnet
-color: green
-maxTurns: 5
-permissionMode: acceptEdits
-memory: project
+name: time-agent
+description: Use this agent to fetch the current time for Dubai, UAE
+  (Asia/Dubai timezone, UTC+4). This agent fetches real-time Dubai time
+  using its preloaded time-fetcher skill.
+tools: Bash
+model: haiku
+color: blue
+maxTurns: 3
 skills:
-  - weather-fetcher
+  - time-fetcher
 ---
 
-# Weather Agent
+You are the time-agent. Your job is to fetch the current Dubai time.
 
-You are a specialized weather agent that fetches weather data for Dubai,
-UAE.
+## Instructions
 
-## Your Task
+1. Use the Bash tool to run: `TZ='Asia/Dubai' date '+%Y-%m-%d %H:%M:%S %Z'`
+2. Parse the output and return three fields: `time`, `timezone`, `formatted`
+3. Return these values clearly so the calling command can extract them
 
-Execute the weather workflow by following the instructions from your preloaded
-skill:
-
-1. **Fetch**: Follow the `weather-fetcher` skill instructions to fetch the
-   current temperature
-2. **Report**: Return the temperature value and unit to the caller
-3. **Memory**: Update your agent memory with the reading details for
-   historical tracking
-
-...
+Do NOT invoke any other agents or skills.
 ```
 
-The agent has one preloaded skill (`weather-fetcher`) that provides instructions for fetching from Open-Meteo. It returns the temperature value and unit to the calling command.
+The agent has one preloaded skill (`time-fetcher`) that carries the command and the output format. It returns the three fields to the calling command.
+
+Three things this file gets right, each of which broke somewhere in this repo before:
+
+- **`tools:`, not `allowedTools:`.** `allowedTools:` in subagent frontmatter restricts nothing — eleven agents here held the full toolset while claiming otherwise, fixed in `c67c83c`.
+- **Whole-tool grants.** `tools: Bash` grants Bash entirely. A command-scoped pattern such as `Bash(date:*)` would narrow nothing here; command scope belongs in `permissions` in `.claude/settings.json`. See [claude-subagents.md](../best-practice/claude-subagents.md).
+- **A tight `maxTurns`.** Three turns is enough for one command and a parse, and it caps a runaway.
 
 ---
 
 ## ![How to Use](../!/tags/how-to-use.svg)
 
+The agent lives in the nested `agent-teams/` workspace, so run Claude from there:
+
 ```bash
+$ cd agent-teams
 $ claude
-> what is the weather in dubai?
+> what time is it in dubai?
 ```
 
 ---
 
 ## ![How to Implement](../!/tags/how-to-implement.svg)
 
-You can create an agent using the `/agents` command, 
+You can create an agent using the `/agents` command,
+
 ```bash
 $ claude
 > /agents
@@ -81,18 +79,16 @@ $ claude
 
 or ask Claude to create one for you — it will generate the markdown file with YAML frontmatter and body in `.claude/agents/<name>.md`
 
+Whatever you write in the frontmatter, confirm it by observation: run the agent with a prompt that needs a forbidden tool and see what it actually holds. Claude Code reports neither an unrecognized field nor a grant that does not apply.
+
 ---
 
-<a href="https://github.com/shanraisshan/claude-code-best-practice#orchestration-workflow"><img src="../!/tags/orchestration-workflow-hd.svg" alt="Orchestration Workflow"></a>
+<a href="claude-agent-teams-implementation.md"><img src="../!/tags/orchestration-workflow-hd.svg" alt="Orchestration Workflow"></a>
 
-The weather agent is the **Agent** in the Command → Agent → Skill orchestration pattern. It receives the workflow from the `/weather-orchestrator` command and fetches temperature using its preloaded skill (`weather-fetcher`). The command then invokes the standalone `weather-svg-creator` skill to create the visual output.
-
-<p align="center">
-  <img src="../orchestration-workflow/orchestration-workflow.svg" alt="Command Skill Agent Architecture Flow" width="100%">
-</p>
+The time agent is the **Agent** in the Command → Agent → Skill orchestration pattern. It receives the workflow from the `/time-orchestrator` command and fetches the time using its preloaded skill (`time-fetcher`). The command then invokes the standalone `time-svg-creator` skill to create the visual output.
 
 | Component | Role | This Repo |
 |-----------|------|-----------|
-| **Command** | Entry point, user interaction | [`/weather-orchestrator`](../.claude/commands/weather-orchestrator.md) |
-| **Agent** | Fetches data with preloaded skill (agent skill) | [`weather-agent`](../.claude/agents/weather-agent.md) with [`weather-fetcher`](../.claude/skills/weather-fetcher/SKILL.md) |
-| **Skill** | Creates output independently (skill) | [`weather-svg-creator`](../.claude/skills/weather-svg-creator/SKILL.md) |
+| **Command** | Entry point, user interaction | [`/time-orchestrator`](../agent-teams/.claude/commands/time-orchestrator.md) |
+| **Agent** | Fetches data with preloaded skill (agent skill) | [`time-agent`](../agent-teams/.claude/agents/time-agent.md) with [`time-fetcher`](../agent-teams/.claude/skills/time-fetcher/SKILL.md) |
+| **Skill** | Creates output independently (skill) | [`time-svg-creator`](../agent-teams/.claude/skills/time-svg-creator/SKILL.md) |
