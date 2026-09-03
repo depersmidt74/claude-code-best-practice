@@ -33,11 +33,20 @@ place. There is no error — the behaviour simply never happens.
 | A skill is installed | `claude -p "List the exact names of every skill available to you via the Skill tool, one per line. Do not call any tool."` — anything absent is not loaded |
 | An agent's tools are restricted | Run it with a prompt needing the forbidden tool; it reports the tools it holds |
 | A hook fires | Trigger its event and look for the effect, not for the config entry |
+| Any grant is actually in effect | `projects["<repo>"].hasTrustDialogAccepted` is `true` in `~/.claude.json`. On an untrusted workspace `.claude/settings.json` is ignored wholesale — Claude Code says so on stderr — and the resulting approval prompts look exactly like a working allowlist |
 
 - `allowedTools:` in subagent frontmatter restricts nothing. Eleven agents held
   the full toolset while claiming otherwise; `weather-agent` documented a
   fail-closed guardrail it did not have. `tools:` / `disallowedTools:` are the
   fields that work. Fixed in `c67c83c`.
+- A command-scoped pattern in `tools:` / `disallowedTools:` is not a subagent
+  guardrail. `tools: Bash(git log:*)` left `curl` and `whoami` running;
+  `disallowedTools: Bash(curl:*)` removed the whole Bash tool rather than curl.
+  Subagent grants are whole-tool; command scope belongs in `permissions` in
+  `.claude/settings.json`. Probes and results in
+  `best-practice/claude-subagents.md`. Same false guarantee as `allowedTools:`,
+  found while porting the pattern in from n8n — where it lives in a skill's
+  `allowed-tools`, which widens rather than restricts.
 - Skills are discovered at exactly `.claude/skills/<name>/SKILL.md`. One extra
   directory level makes a skill invisible; three had been dead for an unknown
   time, and the agent preloading them ran without the knowledge it is built on.

@@ -159,4 +159,4 @@ You can write the world's best recipe. Without a kitchen, you cannot cook at sca
 - [Claude Memory Best Practice](../best-practice/claude-memory.md) — lazy-loaded descendant `CLAUDE.md` files
 - [Claude Subagents Best Practice](../best-practice/claude-subagents.md) — frontmatter reference for harness-enforced capabilities
 - [Claude Settings Best Practice](../best-practice/claude-settings.md) — permission rule evaluation and `auto` mode classifier
-- [Orchestration Workflow](../orchestration-workflow/orchestration-workflow.md) — concrete demonstration that the reduction fails
+- [Commands Implementation](../implementation/claude-commands-implementation.md) — the command → agent → skill orchestration, a concrete demonstration that the reduction fails

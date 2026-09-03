@@ -3,7 +3,7 @@ from vibe coding to agentic engineering - practice makes claude perfect
 
 ![updated with Claude Code](https://img.shields.io/badge/updated_with_Claude_Code-Sep%2001%2C%202026%209%3A46%20AM%20PKT-white?style=flat&labelColor=555) <a href="https://github.com/shanraisshan/claude-code-best-practice/stargazers"><img src="https://img.shields.io/github/stars/shanraisshan/claude-code-best-practice?style=flat&label=%E2%98%85&labelColor=555&color=white" alt="GitHub Stars"></a><br>
 
-[![Best Practice](!/tags/best-practice.svg)](best-practice/) [![Implemented](!/tags/implemented.svg)](implementation/) [![Orchestration Workflow](!/tags/orchestration-workflow.svg)](orchestration-workflow/orchestration-workflow.md) [![Claude](!/tags/claude.svg)](https://code.claude.com/docs) [![Boris](!/tags/boris-cherny.svg)](#-tips-and-tricks) [![Community](!/tags/community.svg)](#-subscribe) ![Click on these badges below to see the actual sources](!/tags/click-badges.svg)<br>
+[![Best Practice](!/tags/best-practice.svg)](best-practice/) [![Implemented](!/tags/implemented.svg)](implementation/) [![Orchestration Workflow](!/tags/orchestration-workflow.svg)](implementation/claude-commands-implementation.md) [![Claude](!/tags/claude.svg)](https://code.claude.com/docs) [![Boris](!/tags/boris-cherny.svg)](#-tips-and-tricks) [![Community](!/tags/community.svg)](#-subscribe) ![Click on these badges below to see the actual sources](!/tags/click-badges.svg)<br>
 <img src="!/tags/a.svg" height="14"> = Agents · <img src="!/tags/c.svg" height="14"> = Commands · <img src="!/tags/s.svg" height="14"> = Skills
 
 <p align="center">
@@ -30,7 +30,7 @@ from vibe coding to agentic engineering - practice makes claude perfect
 | <img src="!/tags/a.svg" height="14"> [**Subagents**](https://code.claude.com/docs/en/sub-agents) | `.claude/agents/<name>.md` | [![Best Practice](!/tags/best-practice.svg)](best-practice/claude-subagents.md) [![Implemented](!/tags/implemented.svg)](implementation/claude-subagents-implementation.md) |
 | <img src="!/tags/c.svg" height="14"> [**Commands**](https://code.claude.com/docs/en/commands) | `.claude/commands/<name>.md` | [![Best Practice](!/tags/best-practice.svg)](best-practice/claude-commands.md) [![Implemented](!/tags/implemented.svg)](implementation/claude-commands-implementation.md) |
 | <img src="!/tags/s.svg" height="14"> [**Skills**](https://code.claude.com/docs/en/skills) | `.claude/skills/<name>/SKILL.md` | [![Best Practice](!/tags/best-practice.svg)](best-practice/claude-skills.md) [![Implemented](!/tags/implemented.svg)](implementation/claude-skills-implementation.md) [Official Skills](https://github.com/anthropics/skills/tree/main/skills) · [Skills for Mono-repos](reports/claude-skills-for-larger-mono-repos.md) |
-| [**Workflows**](https://code.claude.com/docs/en/common-workflows) | [`.claude/commands/weather-orchestrator.md`](.claude/commands/weather-orchestrator.md) | [![Orchestration Workflow](!/tags/orchestration-workflow.svg)](orchestration-workflow/orchestration-workflow.md) |
+| [**Workflows**](https://code.claude.com/docs/en/common-workflows) | [`agent-teams/.claude/commands/time-orchestrator.md`](agent-teams/.claude/commands/time-orchestrator.md) | [![Orchestration Workflow](!/tags/orchestration-workflow.svg)](implementation/claude-commands-implementation.md) |
 | [**Hooks**](https://code.claude.com/docs/en/hooks) | `.claude/hooks/` | [![Best Practice](!/tags/best-practice.svg)](https://github.com/shanraisshan/claude-code-hooks) [![Implemented](!/tags/implemented.svg)](https://github.com/shanraisshan/claude-code-hooks) [Guide](https://code.claude.com/docs/en/hooks-guide) |
 | [**MCP Servers**](https://code.claude.com/docs/en/mcp) | `.claude/settings.json`, `.mcp.json` | [![Best Practice](!/tags/best-practice.svg)](best-practice/claude-mcp.md) [![Implemented](!/tags/implemented.svg)](.mcp.json) |
 | [**Plugins**](https://code.claude.com/docs/en/plugins) | distributable packages | [Marketplaces](https://code.claude.com/docs/en/discover-plugins) · [Create Marketplaces](https://code.claude.com/docs/en/plugin-marketplaces) |
@@ -86,9 +86,9 @@ from vibe coding to agentic engineering - practice makes claude perfect
 
 <a id="orchestration-workflow"></a>
 
-## <a href="orchestration-workflow/orchestration-workflow.md"><img src="!/tags/orchestration-workflow-hd.svg" alt="Orchestration Workflow"></a>
+## <a href="implementation/claude-commands-implementation.md"><img src="!/tags/orchestration-workflow-hd.svg" alt="Orchestration Workflow"></a>
 
-See [orchestration-workflow](orchestration-workflow/orchestration-workflow.md) for implementation details of <img src="!/tags/c.svg" height="14"> **Command** → <img src="!/tags/a.svg" height="14"> **Agent** → <img src="!/tags/s.svg" height="14"> **Skill** pattern.
+See [Commands Implementation](implementation/claude-commands-implementation.md) for implementation details of <img src="!/tags/c.svg" height="14"> **Command** → <img src="!/tags/a.svg" height="14"> **Agent** → <img src="!/tags/s.svg" height="14"> **Skill** pattern.
 
 
 <p align="center">
@@ -102,8 +102,9 @@ See [orchestration-workflow](orchestration-workflow/orchestration-workflow.md) f
 ![How to Use](!/tags/how-to-use.svg)
 
 ```bash
+cd agent-teams
 claude
-/weather-orchestrator
+/time-orchestrator
 ```
 
 <p align="center">
@@ -506,7 +507,7 @@ Get the maximum out of this repo by following these steps:
 
 1. **Read this repo as a course, not as a workflow or skill.** It's reference material first; you'll run things later.
 2. **Don't use Claude as a chatbot.** Learn the primitives — agents, commands, skills, hooks — and assemble them into your own workflow.
-3. **Run [`/weather-orchestrator`](orchestration-workflow/orchestration-workflow.md)** to see a complete command → agent → skill flow. Use it as a template for any dev workflow, from planning to shipping.
+3. **Run [`/time-orchestrator`](implementation/claude-commands-implementation.md)** from the `agent-teams/` directory to see a complete command → agent → skill flow. Use it as a template for any dev workflow, from planning to shipping.
 4. **Listen for the custom hook sounds while you work.** Their implementation lives in the dedicated [Claude Code Hooks repo](https://github.com/shanraisshan/claude-code-hooks); other patterns like [Agent Teams](implementation/claude-agent-teams-implementation.md) ship inside this repo's `implementation/` directory.
 5. **Learn the advanced topics and their implementations** from the [🔥 Hot](#-hot) sub-table — for example, the [Ralph Wiggum self-evolving loop](https://github.com/shanraisshan/ralph-wiggum-self-evolving-loop) is a full working repo you can clone to see one of these patterns end-to-end.
 6. **Point Claude at the [tips and tricks](#-tips-and-tricks-83) section in your own project** and ask it to suggest edits — especially how to restructure your `CLAUDE.md`. Every tip is sourced from the Claude team or the community.
