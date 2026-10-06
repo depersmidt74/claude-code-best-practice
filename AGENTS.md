@@ -123,6 +123,10 @@ Subagents **cannot** invoke other subagents through bash. Use the Agent tool:
 - Skills visible in this repo: `claude -p "List the exact names of every skill
   available to you via the Skill tool, one per line. Do not call any tool."`
 - Frontmatter parses: `python3 -c "import yaml,sys; yaml.safe_load(open(sys.argv[1]).read().split('---')[1])" <file>`
+- Audit a whole skill tree: `python3 scripts/audit-skills.py [root ...]` — placement,
+  frontmatter, dead field aliases, the description cap. Defaults to
+  `.claude/skills`; exits 1 on any error. It proves the fields are real, never
+  that one has the effect it claims.
 - Chain self-test: `bash scripts/test-fmt24h.sh` — network checks report SKIP
   where egress is closed, and the summary says the chain is unconfirmed.
 - Hooks off for a session: `"disableAllHooks": true` in
