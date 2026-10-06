@@ -39,6 +39,45 @@ Claude Code skills — frontmatter fields and official bundled skills.
 | `license` | string | No | License covering the skill. Part of the [Agent Skills](https://agentskills.io) spec. Claude Code accepts the field but does not act on it |
 | `compatibility` | string | No | Environment requirements for the skill (max 500 chars), such as intended products or system prerequisites. Part of the [Agent Skills](https://agentskills.io) spec. Claude Code accepts the field but does not act on it |
 
+### A broken skill is not a rejected skill
+
+Nothing in this table is enforced. Eight probe skills in a clean workspace,
+each broken one way, listed by `claude -p`:
+
+| Probe | Broken how | Loaded? | Description the model received |
+|---|---|---|---|
+| a | nothing — control | yes | its own `description` |
+| b | **no frontmatter at all** | yes | `Probe B` — the body's first heading |
+| c | no `name` | yes, as `probe-c` | its own `description` |
+| d | no `description` | yes | `Say PROBE-D-BODY.` — the body's first line |
+| f | invented field + `allowedTools:` | yes | its own `description` |
+| **h** | **frontmatter that is not valid YAML** | **yes** | `Say PROBE-H-BODY.` — the body's first line |
+| g | `disable-model-invocation: true` | yes, but **absent from the listing** | — |
+| e | `SKILL.md` one directory deeper | **no** | — |
+
+Read the `h` row twice. Unparseable frontmatter does not fail the skill and
+does not warn: the block is discarded, the name falls back to the directory and
+the description to the body's first line. The skill still runs — and every
+field you wrote in it (`allowed-tools`, `model`, `context: fork`,
+`disable-model-invocation`) is gone. It looks like it works because it does
+work; only its configuration is missing.
+
+So the frontmatter parse check is not pedantry:
+
+```bash
+python3 -c "import yaml,sys; yaml.safe_load(open(sys.argv[1]).read().split('---')[1])" .claude/skills/<name>/SKILL.md
+```
+
+A failure there never surfaces at runtime. Nothing else in the table fails
+either — the only breakage Claude Code enforces is placement, row `e`.
+
+The `g` row is a hole in our own verification recipe. A skill with
+`disable-model-invocation: true` is loaded and `/probe-g` runs it, but it never
+appears in the skill listing, because that listing asks what the *model* can
+invoke. Absent from the listing means "not model-invocable", which is not the
+same as "not installed" — check the file for that field before concluding a
+skill is missing.
+
 ---
 
 ## ![Official](../!/tags/official.svg) **(17)**
